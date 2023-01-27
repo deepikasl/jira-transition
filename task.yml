@@ -1,0 +1,15 @@
+name: jira-tranisition
+description: Comments on the given Jira ticket
+source: github.com/deepikasl/jira-transition
+labels:
+  - jira
+  - comment
+input:
+  - name: issue_key
+    description: key of the jira issue where you want to add a comment
+  - name: jira_integration_name
+    description: integration name of your Jira
+  - name: transitionName
+    description: tranisition name to which you want to update your jira issue to
+execution:
+  - node16 dist/index.js

@@ -1,0 +1,5 @@
+repoPath: deepikasl/jira-transition
+mainBranch: main
+gitIntegration: deepikaGithub
+artIntegration: art
+jiraIntegration: deepikajira

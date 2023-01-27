@@ -1,0 +1,87 @@
+valuesFilePath: ./values.yml
+
+resources:
+  - name: jira_transition_task_git_repo
+    type: GitRepo
+    configuration:
+      path: {{ .Values.repoPath }}
+      gitProvider: {{ .Values.gitIntegration }}
+      branches:
+        include: ^{{ .Values.mainBranch }}$
+      cloneProtocol: https
+      
+pipelines:
+  - name: jira_transition_task_publish_pipeline
+    configuration:
+      jfrogCliVersion: 2
+      runtime:
+        type: image
+        image:
+          custom:
+            name: releases-docker.jfrog.io/jfrog/pipelines-u18node
+            tag: "16"
+            autoPull: true
+      environmentVariables:
+        readOnly:
+          TASK_NAME: jira-transition
+          TASK_VERSION: 0.0.${run_number}
+          TASK_REPOSITORY: pipelines-tasks-local
+          RESOLVE_REPO: npm-virtual
+          JIRA_INT: deepikajira
+    steps:
+      - name: build_and_publish_task
+        type: Bash
+        configuration:
+          inputResources:
+            - name: jira_transition_task_git_repo
+              trigger: false
+          integrations:
+            - name: {{ .Values.artIntegration }}
+        execution:
+          onExecute:
+            - test -n "$TASK_VERSION" -a "$TASK_VERSION" != "0.0.0"
+
+            - pushd $res_jira_transition_task_git_repo_resourcePath
+            # Configure JFrog CLI
+            - jfrog npmc --repo-resolve $RESOLVE_REPO
+            # Install npm dependencies
+            - jfrog npm install
+            # Build task runnable script bundled with dependencies
+            - npm run dist
+            - popd
+
+            # Create task package content
+            - mkdir $JFROG_STEP_WORKSPACE_DIR/$TASK_NAME
+            # Copy task.yml
+            - cp $res_jira_transition_task_git_repo_resourcePath/task.yml $JFROG_STEP_WORKSPACE_DIR/$TASK_NAME
+            # Copy README.md
+            - cp $res_jira_transition_task_git_repo_resourcePath/README.md $JFROG_STEP_WORKSPACE_DIR/$TASK_NAME
+            # Copy dist folder
+            - cp -r $res_jira_transition_task_git_repo_resourcePath/dist $JFROG_STEP_WORKSPACE_DIR/$TASK_NAME
+            - echo "Task content" && ls -la $JFROG_STEP_WORKSPACE_DIR/$TASK_NAME
+
+            # Run publish task
+            - task: jfrog/publish-task@v0.0.2
+              id: publish-jira-transition
+              input:
+                path: $JFROG_STEP_WORKSPACE_DIR/$TASK_NAME
+                targetRepository: $TASK_REPOSITORY
+                taskName: $TASK_NAME
+                taskVersion: $TASK_VERSION
+
+      - name: test_published_jira_transition_task
+        type: Bash
+        configuration:
+          inputSteps:
+            - name: build_and_publish_task
+          integrations:
+            - name: {{ .Values.artIntegration }}
+            - name: {{ .Values.jiraIntegration }}
+        execution:
+          onExecute:
+            # Run task
+            - task: $TASK_NAME@v$TASK_VERSION
+              input:
+                issue_key: "TAS-1"
+                jira_integration_name: deepikajira
+                transitionName: "To Do"

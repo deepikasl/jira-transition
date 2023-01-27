@@ -41,16 +41,17 @@ async function jira_transition() {
     url: endpoint + '/rest/api/2/issue/' + issue_key + '/transitions'
   };
 
-  let tranisitionResult = await axios(transitionOptions);
-  tranisitionResult = tranisitionResult.transitions;
-  if (!tranisitionResult || tranisitionResult.length < 1) {
-    tasks.error(`Tranisitions are not present`);
+  let transitionResult = await axios(transitionOptions);
+  console.log('transitionResult',transitionResult);
+  transitionResult = transitionResult.transitions;
+  if (!transitionResult || transitionResult.length < 1) {
+    tasks.error(`Transitions are not present`);
     return process.exit(1);
   } 
-  const requiredTranisition = tranisitionResult.find(
+  const requiredTransition = transitionResult.find(
     ({ name }) => name === transitionName
   );
-  if (!requiredTranisition) {
+  if (!requiredTransition) {
     tasks.error(`No transition with name: ${transitionName}`);
     return process.exit(1);
   }
@@ -66,7 +67,7 @@ async function jira_transition() {
       },
       data: {
           "transition": {
-              "id": requiredTranisition.id
+              "id": requiredTransition.id
           }
       },
       url: endpoint + '/rest/api/2/issue/' + issue_key + '/transitions'

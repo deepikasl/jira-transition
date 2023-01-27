@@ -41,13 +41,12 @@ async function jira_transition() {
     url: endpoint + '/rest/api/2/issue/' + issue_key + '/transitions'
   };
 
-  try {
-    let tranisitionResult = await axios(transitionOptions);
-    tranisitionResult = tranisitionResult.transitions || [];
-  } catch (e) {
-    tasks.error(`Failed to fetch the transitions with error: ${e}`);
+  let tranisitionResult = await axios(transitionOptions);
+  tranisitionResult = tranisitionResult.transitions;
+  if (!tranisitionResult || tranisitionResult.length < 1) {
+    tasks.error(`Tranisitions are not present`);
     return process.exit(1);
-  }
+  } 
   const requiredTranisition = tranisitionResult.find(
     ({ name }) => name === transitionName
   );

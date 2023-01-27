@@ -41,11 +41,16 @@ async function jira_transition() {
     url: endpoint + '/rest/api/2/issue/' + issue_key + '/transitions'
   };
 
-  let transitionResult = await axios(transitionOptions);
-  console.log('transitionResult',transitionResult);
-  transitionResult = transitionResult.transitions;
+  const result = await axios(transitionOptions);
+  let transitionResult = result.data;
   if (!transitionResult || transitionResult.length < 1) {
-    tasks.error(`Transitions are not present`);
+    tasks.error(`GET transitions returned empty`);
+    return process.exit(1);
+  }
+  transitionResult = transitionResult.transitions;
+  console.log('transitionResult',transitionResult);
+  if (!transitionResult || transitionResult.length < 1) {
+    tasks.error(`Transitions are not present for this issue ${issue_key}`);
     return process.exit(1);
   } 
   const requiredTransition = transitionResult.find(

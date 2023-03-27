@@ -14,7 +14,7 @@ async function jira_transition() {
     return process.exit(1);
   }
 
-  const transitionName = tasks.getInput('transitionName');
+  const transitionName = tasks.getInput('transition_name');
   if (transitionName == "") {
     tasks.error("transitionName input cannot be empty");
     return process.exit(1);
@@ -48,7 +48,6 @@ async function jira_transition() {
     return process.exit(1);
   }
   transitionResult = transitionResult.transitions;
-  console.log('transitionResult',transitionResult);
   if (!transitionResult || transitionResult.length < 1) {
     tasks.error(`Transitions are not present for this issue ${issue_key}`);
     return process.exit(1);
@@ -57,27 +56,27 @@ async function jira_transition() {
     ({ name }) => name === transitionName
   );
   if (!requiredTransition) {
-    tasks.error(`No transition with name: ${transitionName}`);
+    tasks.error(`No transition found with name: ${transitionName}`);
     return process.exit(1);
   }
 
   const options = {
-      method: 'POST',
-      headers: {
-          'Content-Type': 'application/json'
-      },
-      auth: {
-          username: username,
-          password: token
-      },
-      data: {
-          "transition": {
-              "id": requiredTransition.id
-          }
-      },
-      url: endpoint + '/rest/api/2/issue/' + issue_key + '/transitions'
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    auth: {
+      username: username,
+      password: token
+    },
+    data: {
+      "transition": {
+        "id": requiredTransition.id
+      }
+    },
+    url: endpoint + '/rest/api/2/issue/' + issue_key + '/transitions'
   };
-  await axios(options);
+  return await axios(options);
 }
 
 module.exports = jira_transition;

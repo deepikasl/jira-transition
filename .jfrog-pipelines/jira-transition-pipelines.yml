@@ -84,4 +84,4 @@ pipelines:
               input:
                 issue_key: "TAS-1"
                 jira_integration_name: deepikajira
-                transitionName: "To Do"
+                transition_name: "To Do"

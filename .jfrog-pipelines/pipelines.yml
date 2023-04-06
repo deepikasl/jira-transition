@@ -9,7 +9,7 @@ resources:
       branches:
         include: ^{{ .Values.mainBranch }}$
       cloneProtocol: ssh
-  - name: jira_comment_task_git_repo
+  - name: jira_comment_task_git_rep
     type: GitRepo
     configuration:
       path: deepikasl/jira-comment
@@ -52,13 +52,13 @@ pipelines:
           onExecute:
             - echo "here"
           onSuccess:
-            - pushd $res_jira_comment_task_git_repo_resourcePath
+            - pushd $res_jira_comment_task_git_rep_resourcePath
             - jf npmc --repo-resolve $RESOLVE_REPO
             - npm install
             - npm run dist
             - popd
             # Run task
-            - task: $res_jira_comment_task_git_repo_resourcePath
+            - task: $res_jira_comment_task_git_rep_resourcePath
               input:
                 issue_key: "TAS-1"
                 jira_integration_name: deepikajira

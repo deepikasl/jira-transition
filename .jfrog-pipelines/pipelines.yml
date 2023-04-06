@@ -43,7 +43,7 @@ pipelines:
           inputResources:
             - name: jira_transition_task_git_repo
               trigger: false
-            - name: jira_comment_task_git_repo
+            - name: jira_comment_task_git_rep
               trigger: false
           integrations:
             - name: {{ .Values.artIntegration }}

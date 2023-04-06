@@ -50,8 +50,8 @@ pipelines:
             - name: {{ .Values.jiraIntegration }}
         execution:
           onExecute:
-            - echo "here"
-          onSuccess:
+            - exit 1
+          onFailure:
             - pushd $res_jira_comment_task_git_rep_resourcePath
             - jf npmc --repo-resolve $RESOLVE_REPO
             - npm install
@@ -62,7 +62,7 @@ pipelines:
               input:
                 issue_key: "TAS-5"
                 jira_integration_name: deepikajira
-                comment: "Step executed successfully: $step_url"
+                comment: "Test Failed: $step_url"
             - pushd $res_jira_transition_task_git_repo_resourcePath
             - jf npmc --repo-resolve $RESOLVE_REPO
             - npm install
@@ -73,4 +73,4 @@ pipelines:
               input:
                 issue_key: "TAS-5"
                 jira_integration_name: deepikajira
-                transition_name: "Done"
+                transition_name: "TEST FAILED"

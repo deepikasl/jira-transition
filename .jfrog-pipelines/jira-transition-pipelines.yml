@@ -45,7 +45,7 @@ pipelines:
             # Configure JFrog CLI
             - jfrog npmc --repo-resolve $RESOLVE_REPO
             # Install npm dependencies
-            - jfrog npm install
+            - npm install
             # Build task runnable script bundled with dependencies
             - npm run dist
             - popd

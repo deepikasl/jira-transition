@@ -8,7 +8,7 @@ resources:
       gitProvider: {{ .Values.gitIntegration }}
       branches:
         include: ^{{ .Values.mainBranch }}$
-      cloneProtocol: https
+      cloneProtocol: ssh
       
 pipelines:
   - name: jira_transition_task_publish_pipeline

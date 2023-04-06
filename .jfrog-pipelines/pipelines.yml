@@ -60,7 +60,7 @@ pipelines:
             # Run task
             - task: $res_jira_comment_task_git_rep_resourcePath
               input:
-                issue_key: "TAS-1"
+                issue_key: "TAS-5"
                 jira_integration_name: deepikajira
                 comment: "Step executed successfully: $step_url"
             - pushd $res_jira_transition_task_git_repo_resourcePath
@@ -71,6 +71,6 @@ pipelines:
             # Run task
             - task: $res_jira_transition_task_git_repo_resourcePath
               input:
-                issue_key: "TAS-1"
+                issue_key: "TAS-5"
                 jira_integration_name: deepikajira
                 transition_name: "Done"

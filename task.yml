@@ -12,4 +12,4 @@ input:
   - name: transition_name
     description: tranisition name to which you want to update your jira issue to
 execution:
-  - node18 dist/index.js
+  - node16 dist/index.js

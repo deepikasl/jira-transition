@@ -80,6 +80,11 @@ pipelines:
             - name: {{ .Values.jiraIntegration }}
         execution:
           onExecute:
+            - pushd $res_jira_transition_task_git_repo_resourcePath
+            - jf npmc --repo-resolve $RESOLVE_REPO
+            - npm install
+            - npm run dist
+            - popd
             # Run task
             - task: $res_jira_transition_task_git_repo_resourcePath
               input:
